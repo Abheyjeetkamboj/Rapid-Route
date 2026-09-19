@@ -547,6 +547,26 @@ export const mockHospitals: Hospital[] = [
     incomingPatients: 1,
     contactStatus: 'online',
   },
+  {
+    id: 'HOSP-06',
+    name: 'Regional Trauma Centre',
+    location: { lat: 30.5400, lng: 76.6100 },
+    area: 'Rajpura South',
+    distanceKm: 6.2,
+    emergencyStatus: 'ready',
+    edStatus: 'Ready',
+    capabilities: ['Trauma', 'Emergency Surgery', 'ICU', 'Orthopedic'],
+    emergencyCapability: 'Level 1 Regional Trauma Centre',
+    icuBedsAvailable: 4,
+    icuBedsTotal: 10,
+    emergencyBedsAvailable: 5,
+    emergencyBedsTotal: 14,
+    cardiacUnit: false,
+    traumaLevel: 'Level I',
+    currentIncomingPatients: 1,
+    incomingPatients: 1,
+    contactStatus: 'online',
+  },
 ];
 
 /* ----- RECENT DISPATCH EVENTS ----- */

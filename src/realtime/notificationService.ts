@@ -8,7 +8,68 @@ import type {
 
 const STORAGE_KEY = 'rapidroute_v2_notifications';
 
+export const INITIAL_NOTIFICATIONS: AppNotification[] = [
+  {
+    id: 'notif-demo-8841',
+    category: 'CRITICAL',
+    type: 'CRITICAL',
+    priority: 'CRITICAL',
+    title: 'Critical emergency requires attention',
+    message: 'INC-8841 is awaiting dispatcher review.',
+    entityType: 'EMERGENCY',
+    entityId: 'INC-8841',
+    read: false,
+    createdAt: new Date(Date.now() - 1000 * 60 * 2).toISOString(),
+    actionUrl: '/?id=INC-8841',
+  },
+  {
+    id: 'notif-demo-204',
+    category: 'OPERATIONS',
+    type: 'OPERATIONS',
+    priority: 'HIGH',
+    title: 'RR-204 dispatched',
+    message: 'Ambulance assigned to Rajpura corridor incident.',
+    entityType: 'AMBULANCE',
+    entityId: 'RR-204',
+    read: false,
+    createdAt: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
+    actionUrl: '/fleet?id=RR-204',
+  },
+  {
+    id: 'notif-demo-hosp',
+    category: 'HOSPITAL',
+    type: 'HOSPITAL',
+    priority: 'NORMAL',
+    title: 'Pre-alert acknowledged',
+    message: 'City Emergency Hospital confirmed cath lab standby.',
+    entityType: 'HOSPITAL',
+    entityId: 'HOSP-01',
+    read: false,
+    createdAt: new Date(Date.now() - 1000 * 60 * 8).toISOString(),
+    actionUrl: '/hospitals?id=HOSP-01',
+  },
+];
+
 type NotificationListener = (notifications: AppNotification[]) => void;
+
+/**
+ * Resolves the appropriate application workspace URL based on entityType and entityId
+ */
+export function getNotificationTargetUrl(notif: AppNotification): string {
+  if (notif.actionUrl) return notif.actionUrl;
+  switch (notif.entityType) {
+    case 'EMERGENCY':
+      return `/?id=${encodeURIComponent(notif.entityId)}`;
+    case 'AMBULANCE':
+      return `/fleet?id=${encodeURIComponent(notif.entityId)}`;
+    case 'HOSPITAL':
+      return `/hospitals?id=${encodeURIComponent(notif.entityId)}`;
+    case 'ALERT':
+      return `/?id=${encodeURIComponent(notif.entityId)}`;
+    default:
+      return '/';
+  }
+}
 
 export class NotificationService {
   private notifications: AppNotification[] = [];
@@ -24,27 +85,18 @@ export class NotificationService {
       if (typeof localStorage !== 'undefined') {
         const raw = localStorage.getItem(STORAGE_KEY);
         if (raw) {
-          this.notifications = JSON.parse(raw);
-          return;
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            this.notifications = parsed;
+            return;
+          }
         }
       }
     } catch (err) {
       console.warn('[NotificationService] Error reading notifications from localStorage:', err);
     }
-    // Seed initial informational notification
-    this.notifications = [
-      {
-        id: 'notif-seed-01',
-        category: 'SYSTEM',
-        priority: 'NORMAL',
-        title: 'EOC Operations Active',
-        message: 'Real-time telemetry and decision support engine operational.',
-        entityType: 'SYSTEM',
-        entityId: 'SYSTEM',
-        read: true,
-        createdAt: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
-      },
-    ];
+    // Seed initial deterministic notifications
+    this.notifications = [...INITIAL_NOTIFICATIONS];
   }
 
   private saveToStorage(): void {
@@ -99,6 +151,11 @@ export class NotificationService {
     this.saveToStorage();
   }
 
+  public resetToDefault(): void {
+    this.notifications = [...INITIAL_NOTIFICATIONS];
+    this.saveToStorage();
+  }
+
   public addNotification(
     category: NotificationCategory,
     priority: NotificationPriority,
@@ -112,6 +169,7 @@ export class NotificationService {
     const notif: AppNotification = {
       id: `notif-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
       category,
+      type: category,
       priority,
       title,
       message,
@@ -129,6 +187,21 @@ export class NotificationService {
     return notif;
   }
 
+  /**
+   * Deterministic test notification generator for verification & development
+   */
+  public createTestNotification(): AppNotification {
+    return this.addNotification(
+      'CRITICAL',
+      'CRITICAL',
+      'Critical emergency requires attention',
+      'INC-8841 is awaiting dispatcher review.',
+      'EMERGENCY',
+      'INC-8841',
+      '/?id=INC-8841'
+    );
+  }
+
   private setupEventListeners(): void {
     eventBus.onAny((event: RealtimeEventType, payload: any) => {
       switch (event) {
@@ -138,8 +211,8 @@ export class NotificationService {
             this.addNotification(
               'CRITICAL',
               'CRITICAL',
-              `New Critical Emergency: ${em.id}`,
-              `${em.location} — ${em.emergencyType} requires priority dispatch.`,
+              `Critical emergency requires attention`,
+              `${em.id} (${em.location}) is awaiting dispatcher review.`,
               'EMERGENCY',
               em.id,
               `/?id=${em.id}`
@@ -162,13 +235,13 @@ export class NotificationService {
           this.addNotification(
             'OPERATIONS',
             'HIGH',
-            `Ambulance Dispatched: ${payload.ambulanceId}`,
-            `${payload.ambulanceId} authorized for deployment to incident ${payload.emergencyId}${
+            `${payload.ambulanceId} dispatched`,
+            `Ambulance authorized for deployment to incident ${payload.emergencyId}${
               payload.isOverride ? ' [Manual Override]' : ''
             }.`,
             'AMBULANCE',
             payload.ambulanceId,
-            `/live-operations?incidentId=${payload.emergencyId}`
+            `/fleet?id=${payload.ambulanceId}`
           );
           break;
         }
@@ -182,7 +255,7 @@ export class NotificationService {
               `Unit ${payload.ambulanceId} completed mission and returned to ready fleet status.`,
               'AMBULANCE',
               payload.ambulanceId,
-              '/fleet'
+              `/fleet?id=${payload.ambulanceId}`
             );
           }
           break;
@@ -207,10 +280,10 @@ export class NotificationService {
             'HOSPITAL',
             isCritical ? 'CRITICAL' : 'HIGH',
             `Hospital Status: ${payload.hospitalName}`,
-            `Status updated from ${payload.previousStatus.toUpperCase()} to ${payload.status.toUpperCase()}. Review incoming case assignments.`,
+            `Status updated from ${payload.previousStatus.toUpperCase()} to ${payload.status.toUpperCase()}.`,
             'HOSPITAL',
             payload.hospitalId,
-            '/hospitals'
+            `/hospitals?id=${payload.hospitalId}`
           );
           break;
         }
@@ -231,12 +304,12 @@ export class NotificationService {
         case 'PRE_ALERT_ACKNOWLEDGED': {
           this.addNotification(
             'HOSPITAL',
-            'HIGH',
-            `Pre-Alert Confirmed: ${payload.preAlert.hospitalName}`,
-            payload.notes || `Emergency bay and surgical resuscitation team confirmed standby for ${payload.emergencyId}.`,
-            'ALERT',
-            payload.preAlert.id,
-            `/?id=${payload.emergencyId}`
+            'NORMAL',
+            `Pre-alert acknowledged`,
+            payload.notes || `${payload.preAlert.hospitalName} confirmed cath lab & trauma team standby.`,
+            'HOSPITAL',
+            payload.hospitalId || 'HOSP-01',
+            `/hospitals?id=${payload.hospitalId || 'HOSP-01'}`
           );
           break;
         }
@@ -246,7 +319,7 @@ export class NotificationService {
             'OPERATIONS',
             'HIGH',
             `Ambulance Arrived at Bay`,
-            `Unit ${payload.ambulanceId} arrived at emergency department intake for ${payload.emergencyId}.`,
+            `Unit ${payload.ambulanceId} arrived at intake bay for ${payload.emergencyId}.`,
             'EMERGENCY',
             payload.emergencyId,
             `/?id=${payload.emergencyId}`

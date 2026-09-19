@@ -61,9 +61,19 @@ export interface Ambulance {
   lng: number;
 }
 
+export interface PatientLocation {
+  address: string;
+  latitude: number;
+  longitude: number;
+  source: 'current' | 'manual';
+  confidence?: number;
+  subtext?: string;
+}
+
 export interface EmergencyRequest {
   id: string;
   patientLocation: string;
+  locationDetails?: PatientLocation;
   emergencyType: string;
   severity: EmergencySeverity;
   patientCount: number;
@@ -76,6 +86,7 @@ export interface ActiveEmergency {
   id: string;
   severity: EmergencySeverity;
   location: string;
+  patientLocation?: PatientLocation;
   emergencyType: string;
   patientCount: number;
   requiredCapability: string;

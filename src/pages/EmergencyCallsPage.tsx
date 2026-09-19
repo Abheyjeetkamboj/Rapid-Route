@@ -39,6 +39,7 @@ import type {
   DispatchStage,
   DispatchRecommendation,
   Hospital,
+  PatientLocation,
 } from '../types';
 import { useDispatchContext } from '../context/DispatchContext';
 import { findBestAmbulance } from '../engine/dispatchEngine';
@@ -46,6 +47,7 @@ import { recommendHospital } from '../engine/hospitalSelectionEngine';
 import { generateHospitalPreAlert } from '../services/preAlertService';
 import { AiIntakeAssistant } from '../components/ai/AiIntakeAssistant';
 import { AiDispatchExplanationCard } from '../components/ai/AiDispatchExplanationCard';
+import { PatientLocationSelector } from '../components/common/PatientLocationSelector';
 import { explainDispatchRecommendation } from '../ai/aiService';
 import type { ExtractedEmergency } from '../ai/aiTypes';
 
@@ -119,6 +121,7 @@ export default function EmergencyCallsPage() {
     notes: '',
   });
 
+  const [selectedLocationObj, setSelectedLocationObj] = useState<PatientLocation | null>(null);
   const [formValidationWarning, setFormValidationWarning] = useState<string | null>(null);
 
   // Selected incident reference
@@ -313,8 +316,18 @@ export default function EmergencyCallsPage() {
   };
 
   const handleEditAiExtraction = (extracted: ExtractedEmergency) => {
+    const locAddress = extracted.location || 'Chitkara University, Rajpura';
+    const locObj: PatientLocation = {
+      address: locAddress,
+      latitude: 30.5162,
+      longitude: 76.6593,
+      source: 'manual',
+      confidence: 0.95,
+      subtext: 'AI Extracted CAD Location (Chitkara Corridor)',
+    };
+    setSelectedLocationObj(locObj);
     setIntakeForm({
-      patientLocation: extracted.location || '',
+      patientLocation: locAddress,
       emergencyType: extracted.emergencyCategory || extracted.symptoms.join(', '),
       severity: extracted.suggestedUrgency,
       patientCount: extracted.patientCount,
@@ -346,8 +359,23 @@ export default function EmergencyCallsPage() {
   const handleIntakeSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!intakeForm.patientLocation.trim() || !intakeForm.emergencyType.trim()) {
-      setFormValidationWarning('Patient location and emergency condition are required.');
+    if (!selectedLocationObj || !selectedLocationObj.address.trim()) {
+      setFormValidationWarning('PATIENT LOCATION REQUIRED. Please select a valid location from current-location or search results.');
+      return;
+    }
+
+    if (
+      typeof selectedLocationObj.latitude !== 'number' ||
+      typeof selectedLocationObj.longitude !== 'number' ||
+      isNaN(selectedLocationObj.latitude) ||
+      isNaN(selectedLocationObj.longitude)
+    ) {
+      setFormValidationWarning('Please select a valid location with coordinates from the current-location result or a search result.');
+      return;
+    }
+
+    if (!intakeForm.emergencyType.trim()) {
+      setFormValidationWarning('Reported emergency condition is required.');
       return;
     }
     setFormValidationWarning(null);
@@ -362,7 +390,7 @@ export default function EmergencyCallsPage() {
       const engineRec = findBestAmbulance(
         {
           id: newId,
-          location: intakeForm.patientLocation,
+          location: selectedLocationObj.address,
           emergencyType: intakeForm.emergencyType,
           severity: intakeForm.severity,
           patientCount: intakeForm.patientCount,
@@ -375,7 +403,8 @@ export default function EmergencyCallsPage() {
       const newEmergency: ActiveEmergency = {
         id: newId,
         severity: intakeForm.severity,
-        location: intakeForm.patientLocation,
+        location: selectedLocationObj.address,
+        patientLocation: selectedLocationObj,
         emergencyType: intakeForm.emergencyType,
         patientCount: intakeForm.patientCount,
         requiredCapability: intakeForm.requiredCapability,
@@ -463,6 +492,7 @@ export default function EmergencyCallsPage() {
       setIsIntakeModalOpen(false);
 
       // Reset form
+      setSelectedLocationObj(null);
       setIntakeForm({
         patientLocation: '',
         emergencyType: '',
@@ -509,7 +539,7 @@ export default function EmergencyCallsPage() {
   };
 
   return (
-    <div className="p-6 lg:p-8 space-y-7 max-w-[1680px] mx-auto">
+    <div className="p-6 lg:p-8 space-y-7 max-w-[1720px] mx-auto pb-28">
       {/* 1. PAGE HERO / TOP DISPATCH BAR */}
       <PageHero
         category="Emergency Dispatch Operations"
@@ -558,23 +588,29 @@ export default function EmergencyCallsPage() {
         </div>
       )}
 
-      {/* 2. MASTER-DETAIL DISPATCH WORKSPACE */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-7 items-start">
-        {/* LEFT PANE: ACTIVE INCIDENTS QUEUE (5 Columns) */}
-        <div className="lg:col-span-5 space-y-4">
-          <div className="rounded-xl border border-border bg-surface shadow-card overflow-hidden">
+      {/* 2. MASTER-DETAIL DISPATCH WORKSPACE (4 cols Queue / 8 cols Workspace) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {/* LEFT PANE: ACTIVE INCIDENTS QUEUE (4 Columns, Sticky Anchor) */}
+        <div className="lg:col-span-4 lg:sticky lg:top-6 space-y-4">
+          <div className="rounded-xl border border-border bg-surface shadow-card overflow-hidden flex flex-col h-auto lg:h-[calc(100vh-7.5rem)] lg:max-h-[860px]">
             {/* Queue Header & Filters */}
             <div className="p-4 border-b border-border-subtle bg-surface-overlay/30 space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <h2 className="text-sm font-bold text-fg tracking-tight">Active Incident Queue</h2>
+                  <h2 className="text-sm font-bold text-fg tracking-tight uppercase">Emergency Calls</h2>
                   <span className="px-2 py-0.5 rounded-full text-[11px] font-mono font-bold bg-accent-redSubtle text-accent-red">
                     {emergencies.filter((e) => e.status !== 'Completed').length} Active
                   </span>
                 </div>
-                <span className="text-[11px] text-fg-faint font-mono">
-                  {ambulanceFleet.filter((a) => a.status === 'AVAILABLE').length} Units Available
-                </span>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={() => setIsIntakeModalOpen(true)}
+                  icon={<Plus className="w-3.5 h-3.5" />}
+                  className="text-xs font-bold py-1 px-2.5"
+                >
+                  + New Call
+                </Button>
               </div>
 
               {/* Search input */}
@@ -584,7 +620,7 @@ export default function EmergencyCallsPage() {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Filter by ID, address, condition..."
+                  placeholder="Filter by ID, address, triage..."
                   className="w-full pl-8 pr-3 py-1.5 rounded-lg bg-surface-overlay border border-border-subtle text-xs text-fg placeholder:text-fg-faint focus:outline-none focus:border-accent-blue"
                 />
               </div>
@@ -597,7 +633,7 @@ export default function EmergencyCallsPage() {
                     onClick={() => setSeverityFilter(tab)}
                     className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition-all ${
                       severityFilter === tab
-                        ? 'bg-surface text-fg font-bold shadow-xs'
+                        ? 'bg-surface text-fg font-bold shadow-xs border border-border-subtle'
                         : 'text-fg-muted hover:text-fg'
                     }`}
                   >
@@ -612,7 +648,7 @@ export default function EmergencyCallsPage() {
             </div>
 
             {/* Incident Cards List */}
-            <div className="divide-y divide-border-subtle max-h-[740px] overflow-y-auto">
+            <div className="divide-y divide-border-subtle flex-1 overflow-y-auto scrollbar-thin">
               {filteredEmergencies.length === 0 ? (
                 <div className="p-8 text-center text-xs text-fg-muted">
                   No active incidents match the current filter criteria.
@@ -720,11 +756,19 @@ export default function EmergencyCallsPage() {
                 })
               )}
             </div>
+
+            {/* Queue Footer Anchor */}
+            <div className="p-3 border-t border-border-subtle bg-surface-overlay/50 flex items-center justify-between text-[11px] font-mono text-fg-muted">
+              <span>{emergencies.filter((e) => e.status !== 'Completed').length} active in queue</span>
+              <span className="text-status-available font-bold">
+                {ambulanceFleet.filter((a) => a.status === 'AVAILABLE').length} units available
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* RIGHT PANE: ACTIVE INCIDENT WORKSPACE (7 Columns) */}
-        <div className="lg:col-span-7 space-y-6">
+        {/* RIGHT PANE: ACTIVE INCIDENT WORKSPACE (8 Columns) */}
+        <div className="lg:col-span-8 space-y-6">
           {selectedIncident ? (
             <div className="space-y-6">
               {/* WORKSPACE HEADER BAR */}
@@ -1488,74 +1532,181 @@ export default function EmergencyCallsPage() {
                 )}
               </div>
 
-              {/* 5. ACTIVITY TIMELINE */}
-              <div className="p-6 rounded-xl border border-border bg-surface shadow-card space-y-4">
-                <div className="flex items-center justify-between border-b border-border-subtle pb-3">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-fg-muted flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-accent-blue" />
-                    Response Activity Timeline
-                  </h3>
-                  <span className="text-xs font-mono text-fg-faint">
-                    {selectedIncident.timeline.length} AUDIT EVENTS
-                  </span>
+              {/* 5. BALANCED OPERATIONAL BOTTOM ROW (TIMELINE + LIVE RESPONSE STATUS) */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+                {/* LEFT: INCIDENT TIMELINE */}
+                <div className="p-6 rounded-xl border border-border bg-surface shadow-card space-y-4 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between border-b border-border-subtle pb-3">
+                      <h3 className="text-xs font-bold uppercase tracking-wider text-fg-muted flex items-center gap-2">
+                        <Clock className="w-4 h-4 text-accent-blue" />
+                        Incident Timeline & Audit
+                      </h3>
+                      <span className="text-xs font-mono text-fg-faint">
+                        {selectedIncident.timeline.length} AUDIT EVENTS
+                      </span>
+                    </div>
+
+                    <div className="space-y-4 pt-3">
+                      {selectedIncident.timeline.map((step, idx) => {
+                        const isCompleted = step.status === 'completed';
+                        const isCurrent = step.status === 'current';
+
+                        return (
+                          <div key={idx} className="flex items-start gap-3 relative group">
+                            {/* Connecting line */}
+                            {idx !== selectedIncident.timeline.length - 1 && (
+                              <div
+                                className={`absolute left-2.5 top-6 bottom-0 w-0.5 ${
+                                  isCompleted ? 'bg-status-available/40' : 'bg-border-subtle'
+                                }`}
+                              />
+                            )}
+
+                            {/* Dot indicator */}
+                            <div className="pt-0.5 z-10 flex-shrink-0">
+                              {isCompleted ? (
+                                <div className="w-5 h-5 rounded-full bg-status-available text-white flex items-center justify-center shadow-xs">
+                                  <CheckCircle2 className="w-3.5 h-3.5" />
+                                </div>
+                              ) : isCurrent ? (
+                                <div className="w-5 h-5 rounded-full bg-accent-blue text-white flex items-center justify-center animate-pulse shadow-glow-blue">
+                                  <span className="w-2 h-2 rounded-full bg-white" />
+                                </div>
+                              ) : (
+                                <div className="w-5 h-5 rounded-full bg-surface-raised border border-border-subtle flex items-center justify-center">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-fg-faint" />
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Content */}
+                            <div className="min-w-0 flex-1 pb-2">
+                              <div className="flex items-center justify-between gap-2">
+                                <span
+                                  className={`text-xs font-bold ${
+                                    isCompleted ? 'text-fg' : isCurrent ? 'text-accent-blue' : 'text-fg-muted'
+                                  }`}
+                                >
+                                  {step.title}
+                                </span>
+                                {step.timestamp && (
+                                  <span className="font-mono text-[11px] text-fg-faint flex-shrink-0">
+                                    {step.timestamp}
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-xs text-fg-muted mt-0.5 leading-relaxed">
+                                {step.detail}
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
 
-                <div className="space-y-4 pt-1">
-                  {selectedIncident.timeline.map((step, idx) => {
-                    const isCompleted = step.status === 'completed';
-                    const isCurrent = step.status === 'current';
-
-                    return (
-                      <div key={idx} className="flex items-start gap-3 relative group">
-                        {/* Connecting line */}
-                        {idx !== selectedIncident.timeline.length - 1 && (
-                          <div
-                            className={`absolute left-2.5 top-6 bottom-0 w-0.5 ${
-                              isCompleted ? 'bg-status-available/40' : 'bg-border-subtle'
-                            }`}
-                          />
-                        )}
-
-                        {/* Dot indicator */}
-                        <div className="pt-0.5 z-10 flex-shrink-0">
-                          {isCompleted ? (
-                            <div className="w-5 h-5 rounded-full bg-status-available text-white flex items-center justify-center shadow-xs">
-                              <CheckCircle2 className="w-3.5 h-3.5" />
-                            </div>
-                          ) : isCurrent ? (
-                            <div className="w-5 h-5 rounded-full bg-accent-blue text-white flex items-center justify-center animate-pulse shadow-glow-blue">
-                              <span className="w-2 h-2 rounded-full bg-white" />
-                            </div>
-                          ) : (
-                            <div className="w-5 h-5 rounded-full bg-surface-raised border border-border-subtle flex items-center justify-center">
-                              <span className="w-1.5 h-1.5 rounded-full bg-fg-faint" />
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Content */}
-                        <div className="min-w-0 flex-1 pb-2">
-                          <div className="flex items-center justify-between gap-2">
-                            <span
-                              className={`text-xs font-bold ${
-                                isCompleted ? 'text-fg' : isCurrent ? 'text-accent-blue' : 'text-fg-muted'
-                              }`}
-                            >
-                              {step.title}
-                            </span>
-                            {step.timestamp && (
-                              <span className="font-mono text-[11px] text-fg-faint flex-shrink-0">
-                                {step.timestamp}
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-xs text-fg-muted mt-0.5 leading-relaxed">
-                            {step.detail}
-                          </p>
-                        </div>
+                {/* RIGHT: LIVE RESPONSE STATUS */}
+                <div className="p-6 rounded-xl border border-border bg-surface shadow-card space-y-4 flex flex-col justify-between">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between border-b border-border-subtle pb-3">
+                      <div className="flex items-center gap-2">
+                        <Navigation className="w-4 h-4 text-status-available" />
+                        <h3 className="text-xs font-bold uppercase tracking-wider text-fg-muted">
+                          Live Response Status
+                        </h3>
                       </div>
-                    );
-                  })}
+                      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-status-available/10 text-status-available border border-status-available/20">
+                        <span className="w-1.5 h-1.5 rounded-full bg-status-available animate-pulse" />
+                        TELEMETRY ACTIVE
+                      </span>
+                    </div>
+
+                    {/* Active Unit Telemetry Card */}
+                    <div className="p-3.5 rounded-lg bg-surface-raised border border-border-subtle space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-fg-faint">
+                          Assigned Ambulance
+                        </span>
+                        <span className="font-mono font-bold text-xs text-accent-blue">
+                          {selectedIncident.requiredCapability}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono text-base font-bold text-fg">
+                            {selectedIncident.assignedAmbulance || liveRecommendation?.recommendedAmbulanceId || 'RR-204'}
+                          </span>
+                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-surface-overlay text-fg-muted">
+                            {selectedIncident.ambulanceDetails?.driverName || 'Officer S. Sharma'}
+                          </span>
+                        </div>
+                        <StatusPill
+                          status={
+                            selectedIncident.status === 'Awaiting Dispatch'
+                              ? 'AWAITING'
+                              : selectedIncident.status === 'En Route'
+                              ? 'EN_ROUTE'
+                              : 'DISPATCHED'
+                          }
+                          label={selectedIncident.status.toUpperCase()}
+                          size="sm"
+                        />
+                      </div>
+                    </div>
+
+                    {/* ETA & Traffic Metrics */}
+                    <div className="grid grid-cols-2 gap-3 text-xs font-mono">
+                      <div className="p-3 rounded-lg bg-surface-overlay border border-border-subtle">
+                        <span className="text-[10px] uppercase font-bold text-fg-faint block">Live ETA</span>
+                        <span className="font-mono text-lg font-bold text-status-available">
+                          {selectedIncident.etaMinutes ? `${selectedIncident.etaMinutes} MIN` : `${liveRecommendation?.etaMinutes || 8} MIN`}
+                        </span>
+                      </div>
+                      <div className="p-3 rounded-lg bg-surface-overlay border border-border-subtle">
+                        <span className="text-[10px] uppercase font-bold text-fg-faint block">Traffic Factor</span>
+                        <span className="font-bold text-fg text-xs mt-1 block">
+                          {selectedIncident.ambulanceDetails?.traffic || liveRecommendation?.recommendedAmbulance?.trafficCondition || 'Light'} Corridor
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Hospital Standby Directive */}
+                    {designatedHospital && (
+                      <div className="p-3.5 rounded-lg bg-surface-raised border border-border-subtle space-y-1 text-xs">
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-fg flex items-center gap-1.5">
+                            <Building2 className="w-3.5 h-3.5 text-accent-blue" />
+                            {designatedHospital.name}
+                          </span>
+                          <span className="font-mono text-[10px] text-status-available font-bold">
+                            {designatedHospital.icuBedsAvailable} ICU Free
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-fg-muted">
+                          Pre-Alert Status:{' '}
+                          <strong className="text-accent-blue">
+                            {activePreAlert?.status || 'READY_TO_SEND'}
+                          </strong>
+                          . Primary PCI Cath Lab standby requested.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Navigation CTA to Live Map */}
+                  <div className="pt-2">
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => navigate(`/live-operations?incidentId=${selectedIncident.id}`)}
+                      icon={<Navigation className="w-3.5 h-3.5 text-accent-blue" />}
+                      className="w-full text-xs font-semibold"
+                    >
+                      Open Live Tactical Map →
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1622,24 +1773,21 @@ export default function EmergencyCallsPage() {
               </div>
             )}
 
-          {/* Location */}
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-fg-muted mb-1.5 flex items-center justify-between">
-              <span className="flex items-center gap-1.5">
-                <MapPin className="w-3.5 h-3.5 text-accent-red" />
-                Patient Location / Sector
-              </span>
-              <span className="text-[10px] font-mono text-accent-red">*REQUIRED</span>
-            </label>
-            <input
-              type="text"
-              required
-              value={intakeForm.patientLocation}
-              onChange={(e) => setIntakeForm({ ...intakeForm, patientLocation: e.target.value })}
-              placeholder="e.g. Chitkara University, Rajpura or Sector 17, Chandigarh"
-              className="w-full px-3.5 py-2.5 rounded-lg bg-surface-overlay border border-border text-sm text-fg placeholder:text-fg-faint focus:outline-none focus:ring-2 focus:ring-accent-blue/30 focus:border-accent-blue"
-            />
-          </div>
+          {/* Patient Location Field (Current Location or Manual Search) */}
+          <PatientLocationSelector
+            value={selectedLocationObj}
+            onChange={(loc) => {
+              setSelectedLocationObj(loc);
+              setIntakeForm((prev) => ({
+                ...prev,
+                patientLocation: loc ? loc.address : '',
+              }));
+              if (loc) {
+                setFormValidationWarning(null);
+              }
+            }}
+            error={formValidationWarning && !selectedLocationObj ? formValidationWarning : null}
+          />
 
           {/* Emergency Condition */}
           <div>

@@ -136,7 +136,7 @@ export const OperationsMap: React.FC<OperationsMapProps> = ({
   return (
     <div
       className={`rounded-xl border border-border bg-surface shadow-card overflow-hidden transition-all flex flex-col ${
-        isFullscreen ? 'fixed inset-4 z-[9999]' : 'relative min-h-[640px] h-[640px]'
+        isFullscreen ? 'fixed inset-4 z-[9999]' : 'relative min-h-[560px] h-[560px] lg:min-h-[620px] lg:h-[620px]'
       }`}
     >
       {/* Map Header Toolbar */}

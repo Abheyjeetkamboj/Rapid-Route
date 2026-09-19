@@ -82,6 +82,12 @@ export interface DispatchContextType {
   pauseSimulation: () => void;
   stepSimulation: () => void;
   resetSimulation: () => void;
+  loadCardiacScenario: () => void;
+  triggerNewEmergency: () => void;
+  simulateEtaUpdate: (newEta?: number, reason?: string) => void;
+  simulateHospitalAck: (notes?: string) => void;
+  simulateAmbulanceArrival: () => void;
+  simulateHandover: (notes?: string) => void;
 }
 
 const DispatchContext = createContext<DispatchContextType | undefined>(undefined);
@@ -709,6 +715,30 @@ export function DispatchProvider({ children }: { children: ReactNode }) {
     simulationService.reset();
   }, []);
 
+  const loadCardiacScenario = useCallback(() => {
+    simulationService.loadCardiacScenario();
+  }, []);
+
+  const triggerNewEmergency = useCallback(() => {
+    simulationService.triggerNewEmergency();
+  }, []);
+
+  const simulateEtaUpdate = useCallback((newEta?: number, reason?: string) => {
+    simulationService.simulateEtaUpdate(newEta, reason);
+  }, []);
+
+  const simulateHospitalAck = useCallback((notes?: string) => {
+    simulationService.simulateHospitalAck(notes);
+  }, []);
+
+  const simulateAmbulanceArrival = useCallback(() => {
+    simulationService.simulateAmbulanceArrival();
+  }, []);
+
+  const simulateHandover = useCallback((notes?: string) => {
+    simulationService.simulateHandover(notes);
+  }, []);
+
   return (
     <DispatchContext.Provider
       value={{
@@ -748,6 +778,12 @@ export function DispatchProvider({ children }: { children: ReactNode }) {
         pauseSimulation,
         stepSimulation,
         resetSimulation,
+        loadCardiacScenario,
+        triggerNewEmergency,
+        simulateEtaUpdate,
+        simulateHospitalAck,
+        simulateAmbulanceArrival,
+        simulateHandover,
       }}
     >
       {children}

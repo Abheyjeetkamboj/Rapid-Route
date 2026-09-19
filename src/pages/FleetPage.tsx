@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   Search,
   X,
@@ -31,9 +32,22 @@ const FILTER_OPTIONS: { label: string; value: FilterType }[] = [
 
 export default function FleetPage() {
   const { ambulanceFleet } = useDispatchContext();
+  const [searchParams] = useSearchParams();
+  const queryAmbulanceId = searchParams.get('id');
+
   const [filter, setFilter] = useState<FilterType>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedAmbulance, setSelectedAmbulance] = useState<Ambulance | null>(null);
+
+  // Auto-select and open drawer if navigated with ?id=
+  useEffect(() => {
+    if (queryAmbulanceId) {
+      const match = ambulanceFleet.find((a) => a.id.toLowerCase() === queryAmbulanceId.toLowerCase());
+      if (match) {
+        setSelectedAmbulance(match);
+      }
+    }
+  }, [queryAmbulanceId, ambulanceFleet]);
 
   // Top metric counts
   const counts = useMemo(() => {

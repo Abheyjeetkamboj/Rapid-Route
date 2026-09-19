@@ -11,12 +11,28 @@
    ========================================================= */
 
 @layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html,
+  body,
+  #root {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
   /* ---- DARK THEME (Premium Emergency Operations) ---- */
-  :root {
+  :root,
+  .dark {
     color-scheme: dark;
 
     /* Surfaces - Layered, deep & rich, never washed out */
     --app-bg: #0b0d13;
+    --background: #0b0d13;
     --surface: #131722;
     --surface-raised: #181d2c;
     --surface-overlay: #1f2538;
@@ -32,6 +48,8 @@
     --fg: #f1f3f9;
     --fg-muted: #949db2;
     --fg-faint: #5a647a;
+    --text-primary: #f1f3f9;
+    --text-secondary: #949db2;
 
     /* Sidebar - sleek, integrated */
     --sidebar-bg: #0e111a;
@@ -40,6 +58,18 @@
     --sidebar-border: #1b2131;
     --sidebar-fg: #d6dbe7;
     --sidebar-fg-muted: #6b758d;
+
+    /* Core Status Colors */
+    --critical: #dc2626;
+    --warning: #d97706;
+    --success: #16a34a;
+    --info: #2563eb;
+
+    /* Accent RGB channels for safe opacity calculations */
+    --accent-red-rgb: 220, 38, 38;
+    --accent-green-rgb: 22, 163, 74;
+    --accent-amber-rgb: 217, 119, 6;
+    --accent-blue-rgb: 37, 99, 235;
 
     /* Restrained accent tints */
     --accent-red-subtle: rgba(220, 38, 38, 0.12);
@@ -61,6 +91,7 @@
 
     /* Surfaces - Soft cool off-white, crisp white primary */
     --app-bg: #f6f8fb;
+    --background: #f6f8fb;
     --surface: #ffffff;
     --surface-raised: #ffffff;
     --surface-overlay: #f1f4f9;
@@ -76,6 +107,8 @@
     --fg: #0f172a;
     --fg-muted: #556177;
     --fg-faint: #94a3b8;
+    --text-primary: #0f172a;
+    --text-secondary: #556177;
 
     /* Sidebar */
     --sidebar-bg: #fcfdfe;
@@ -84,6 +117,18 @@
     --sidebar-border: #e8edf5;
     --sidebar-fg: #1e293b;
     --sidebar-fg-muted: #64748b;
+
+    /* Core Status Colors */
+    --critical: #dc2626;
+    --warning: #d97706;
+    --success: #16a34a;
+    --info: #2563eb;
+
+    /* Accent RGB channels for safe opacity calculations */
+    --accent-red-rgb: 220, 38, 38;
+    --accent-green-rgb: 22, 163, 74;
+    --accent-amber-rgb: 217, 119, 6;
+    --accent-blue-rgb: 37, 99, 235;
 
     /* Restrained accent tints */
     --accent-red-subtle: rgba(220, 38, 38, 0.08);
@@ -102,6 +147,7 @@
   body {
     background-color: var(--app-bg);
     color: var(--fg);
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 }

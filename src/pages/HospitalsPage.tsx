@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   Building2,
   BedDouble,
@@ -24,12 +25,26 @@ import { useDispatchContext } from '../context/DispatchContext';
 
 export default function HospitalsPage() {
   const { hospitals, emergencies } = useDispatchContext();
+  const [searchParams] = useSearchParams();
+  const queryHospitalId = searchParams.get('id');
+
   const [selectedHospital, setSelectedHospital] = useState<Hospital | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [statusFilter, setStatusFilter] = useState<'ALL' | HospitalStatus>('ALL');
   const [capabilityFilter, setCapabilityFilter] = useState<string>('ALL');
   const [sortBy, setSortBy] = useState<'distance' | 'icu' | 'name'>('distance');
+
+  // Auto-select and open drawer if navigated with ?id=
+  useEffect(() => {
+    if (queryHospitalId) {
+      const match = hospitals.find((h) => h.id.toLowerCase() === queryHospitalId.toLowerCase());
+      if (match) {
+        setSelectedHospital(match);
+        setIsDrawerOpen(true);
+      }
+    }
+  }, [queryHospitalId, hospitals]);
 
   // Network Metrics
   const totalHospitals = hospitals.length;

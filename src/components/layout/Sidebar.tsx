@@ -7,19 +7,28 @@ import {
   BarChart3,
   Settings,
   Activity,
+  LayoutDashboard,
 } from 'lucide-react';
 import { StatusDot } from '../ui';
+import { useRole } from '../../context/RoleContext';
 
-const navItems = [
+const allNavItems = [
+  { to: '/overview', label: 'Overview', icon: LayoutDashboard, badge: null },
   { to: '/', label: 'Emergency Calls', icon: PhoneCall, badge: '4' },
   { to: '/live-operations', label: 'Live Operations', icon: Map, badge: 'LIVE' },
   { to: '/fleet', label: 'Ambulance Fleet', icon: Truck, badge: null },
   { to: '/hospitals', label: 'Hospitals', icon: Building2, badge: null },
+  { to: '/hospital-operations', label: 'Hospital Operations', icon: Activity, badge: 'BAY' },
   { to: '/analytics', label: 'Analytics', icon: BarChart3, badge: null },
   { to: '/settings', label: 'Settings', icon: Settings, badge: null },
 ];
 
 export function Sidebar() {
+  const { currentConfig, canAccess } = useRole();
+
+  // Filter navigation links allowed for the active role
+  const visibleNavItems = allNavItems.filter((item) => canAccess(item.to));
+
   return (
     <aside className="w-64 flex-shrink-0 h-screen sticky top-0 flex flex-col bg-sidebar-bg border-r border-sidebar-border select-none z-30 transition-colors">
       {/* Brand Header */}
@@ -45,14 +54,14 @@ export function Sidebar() {
       {/* Navigation Links */}
       <div className="px-3 pt-4 pb-2">
         <p className="px-3 text-[10px] font-semibold uppercase tracking-wider text-sidebar-fgMuted mb-2">
-          Dispatch Console
+          {currentConfig.label} Workspace
         </p>
         <nav className="space-y-1">
-          {navItems.map((item) => (
+          {visibleNavItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
-              end={item.to === '/'}
+              end={item.to === '/' || item.to === '/overview'}
               className={({ isActive }) =>
                 `group relative flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${
                   isActive
@@ -81,6 +90,8 @@ export function Sidebar() {
                       className={`px-1.5 py-0.5 text-[10px] font-mono font-medium rounded ${
                         item.badge === 'LIVE'
                           ? 'bg-accent-greenSubtle text-status-available font-semibold'
+                          : item.badge === 'BAY'
+                          ? 'bg-purple-500/10 text-purple-400 font-bold'
                           : 'bg-accent-redSubtle text-accent-red font-bold'
                       }`}
                     >
@@ -104,16 +115,16 @@ export function Sidebar() {
         </p>
       </div>
 
-      {/* Dispatcher Footer */}
+      {/* Active Persona Footer */}
       <div className="p-3 border-t border-sidebar-border/60 bg-sidebar-bg">
         <div className="flex items-center justify-between p-2 rounded-lg hover:bg-sidebar-hover transition-colors">
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-8 h-8 rounded-full bg-surface-raised border border-border flex items-center justify-center text-xs font-semibold text-fg flex-shrink-0 shadow-xs">
-              SS
+            <div className="w-8 h-8 rounded-full bg-surface-raised border border-border flex items-center justify-center text-xs font-semibold text-fg flex-shrink-0 shadow-xs font-mono">
+              {currentConfig.userBadge}
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-semibold text-fg truncate">Officer S. Sharma</p>
-              <p className="text-[11px] text-fg-faint truncate font-mono">EOC Dispatcher #4</p>
+              <p className="text-xs font-semibold text-fg truncate">{currentConfig.userName}</p>
+              <p className="text-[11px] text-fg-faint truncate font-mono">{currentConfig.userRoleTag}</p>
             </div>
           </div>
           <div className="flex items-center gap-1.5 pl-2 flex-shrink-0">

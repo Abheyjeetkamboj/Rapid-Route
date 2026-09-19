@@ -1,5 +1,5 @@
 import type { LatLngTuple } from './mapTypes';
-import type { ActiveEmergency } from '../types';
+import type { ActiveEmergency, PatientLocation } from '../types';
 
 export const TRICITY_CENTER: LatLngTuple = [30.5800, 76.7200];
 export const DEFAULT_MAP_ZOOM = 11;
@@ -8,6 +8,7 @@ export const DEFAULT_MAP_ZOOM = 11;
  * Standard coordinates for known incident locations in the Tricity / Punjab corridor
  */
 export const INCIDENT_COORDINATES: Record<string, LatLngTuple> = {
+  'INC-8841': [30.5162, 76.6593], // Chitkara University, Rajpura (Master Demo Scenario)
   'INC-4821': [30.5162, 76.6593], // Chitkara University, Rajpura
   'INC-4820': [30.7410, 76.7850], // Sector 17, Chandigarh
   'INC-4819': [30.7100, 76.7110], // Phase 7, Mohali
@@ -41,12 +42,24 @@ export const HOSPITAL_COORDINATES: Record<string, LatLngTuple> = {
   'HOSP-03': [30.7660, 76.7760], // PGIMER Trauma Hub, Chandigarh
   'HOSP-04': [30.3310, 76.3920], // Civil Hospital, Patiala
   'HOSP-05': [30.6930, 76.7320], // Fortis Hospital, Mohali
+  'HOSP-06': [30.5400, 76.6100], // Regional Trauma Centre, Rajpura South
 };
 
 /**
  * Resolves coordinates for an incident entity or location string
  */
-export function getCoordinatesForIncident(incident: ActiveEmergency | { id: string; location: string }): LatLngTuple {
+export function getCoordinatesForIncident(
+  incident: ActiveEmergency | { id: string; location: string; patientLocation?: PatientLocation }
+): LatLngTuple {
+  if (
+    'patientLocation' in incident &&
+    incident.patientLocation &&
+    typeof incident.patientLocation.latitude === 'number' &&
+    typeof incident.patientLocation.longitude === 'number'
+  ) {
+    return [incident.patientLocation.latitude, incident.patientLocation.longitude];
+  }
+
   if (INCIDENT_COORDINATES[incident.id]) {
     return INCIDENT_COORDINATES[incident.id];
   }

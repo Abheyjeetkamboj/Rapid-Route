@@ -71,7 +71,7 @@ export const OperationsPanel: React.FC<OperationsPanelProps> = ({
   }, [recommendation, selectedIncident]);
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4 lg:max-h-[620px] lg:overflow-y-auto lg:pr-1.5 scrollbar-thin">
       {/* 1. INCIDENT SELECTOR & STATUS */}
       <div className="rounded-xl border border-border bg-surface shadow-card p-5 space-y-4">
         <div className="flex items-center justify-between border-b border-border-subtle pb-3">

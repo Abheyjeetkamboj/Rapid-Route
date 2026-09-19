@@ -105,6 +105,7 @@ export type NotificationPriority =
 
 export interface AppNotification {
   id: string;
+  type?: NotificationCategory;
   category: NotificationCategory;
   priority: NotificationPriority;
   title: string;

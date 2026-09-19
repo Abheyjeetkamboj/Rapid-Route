@@ -8,12 +8,15 @@ export default {
   theme: {
     extend: {
       colors: {
+        'app-bg': 'var(--app-bg)',
+        background: 'var(--background)',
         surface: {
           DEFAULT: 'var(--surface)',
           raised: 'var(--surface-raised)',
           overlay: 'var(--surface-overlay)',
           inset: 'var(--surface-inset)',
           tintedBlue: 'var(--surface-tinted-blue)',
+          'tinted-blue': 'var(--surface-tinted-blue)',
         },
         border: {
           DEFAULT: 'var(--border)',
@@ -40,14 +43,18 @@ export default {
           offline: '#64748b',
         },
         accent: {
-          red: '#dc2626',
+          red: 'rgb(var(--accent-red-rgb) / <alpha-value>)',
           redSubtle: 'var(--accent-red-subtle)',
-          green: '#16a34a',
+          'red-subtle': 'var(--accent-red-subtle)',
+          green: 'rgb(var(--accent-green-rgb) / <alpha-value>)',
           greenSubtle: 'var(--accent-green-subtle)',
-          amber: '#d97706',
+          'green-subtle': 'var(--accent-green-subtle)',
+          amber: 'rgb(var(--accent-amber-rgb) / <alpha-value>)',
           amberSubtle: 'var(--accent-amber-subtle)',
-          blue: '#2563eb',
+          'amber-subtle': 'var(--accent-amber-subtle)',
+          blue: 'rgb(var(--accent-blue-rgb) / <alpha-value>)',
           blueSubtle: 'var(--accent-blue-subtle)',
+          'blue-subtle': 'var(--accent-blue-subtle)',
         },
       },
       fontFamily: {

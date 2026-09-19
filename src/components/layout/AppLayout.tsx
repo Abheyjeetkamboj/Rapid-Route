@@ -3,13 +3,16 @@ import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 import { ToastContainer } from '../notifications/ToastContainer';
 import { DemoLiveController } from '../notifications/DemoLiveController';
+import { ErrorBoundary } from '../common/ErrorBoundary';
 
 const pageTitles: Record<string, string> = {
   '/': 'Emergency Calls',
   '/emergency-calls': 'Emergency Calls',
+  '/overview': 'Network Operations Overview',
   '/live-operations': 'Live Operations',
   '/fleet': 'Ambulance Fleet',
   '/hospitals': 'Hospitals',
+  '/hospital-operations': 'Hospital Operations Portal',
   '/analytics': 'Analytics',
   '/settings': 'Settings',
 };
@@ -19,12 +22,14 @@ export function AppLayout() {
   const title = pageTitles[pathname] ?? 'Emergency Calls';
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden">
+    <div className="flex h-full w-full overflow-hidden bg-app-bg text-fg">
       <Sidebar />
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <Header title={title} />
         <main className="flex-1 overflow-y-auto relative">
-          <Outlet />
+          <ErrorBoundary>
+            <Outlet />
+          </ErrorBoundary>
         </main>
       </div>
 
