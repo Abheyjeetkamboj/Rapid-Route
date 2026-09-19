@@ -1,0 +1,211 @@
+@import 'leaflet/dist/leaflet.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =========================================================
+   RAPIDROUTE AI — ELEVATED DESIGN SYSTEM
+   Premium Emergency & Hospital Operations Interface
+   Inspired by Linear, Stripe, Apple Enterprise & Modern Avionics
+   ========================================================= */
+
+@layer base {
+  /* ---- DARK THEME (Premium Emergency Operations) ---- */
+  :root {
+    color-scheme: dark;
+
+    /* Surfaces - Layered, deep & rich, never washed out */
+    --app-bg: #0b0d13;
+    --surface: #131722;
+    --surface-raised: #181d2c;
+    --surface-overlay: #1f2538;
+    --surface-inset: #0e111a;
+    --surface-tinted-blue: rgba(37, 99, 235, 0.05);
+
+    /* Subtle hairline borders */
+    --border: #232a3d;
+    --border-subtle: #192030;
+    --border-strong: #333d57;
+
+    /* Typography */
+    --fg: #f1f3f9;
+    --fg-muted: #949db2;
+    --fg-faint: #5a647a;
+
+    /* Sidebar - sleek, integrated */
+    --sidebar-bg: #0e111a;
+    --sidebar-hover: #161b28;
+    --sidebar-active: #1c2234;
+    --sidebar-border: #1b2131;
+    --sidebar-fg: #d6dbe7;
+    --sidebar-fg-muted: #6b758d;
+
+    /* Restrained accent tints */
+    --accent-red-subtle: rgba(220, 38, 38, 0.12);
+    --accent-green-subtle: rgba(22, 163, 74, 0.12);
+    --accent-amber-subtle: rgba(217, 119, 6, 0.12);
+    --accent-blue-subtle: rgba(37, 99, 235, 0.12);
+
+    /* Soft natural shadows */
+    --shadow-card: 0 2px 8px -2px rgba(0, 0, 0, 0.4), 0 1px 3px -1px rgba(0, 0, 0, 0.3);
+    --shadow-card-hover: 0 12px 28px -6px rgba(0, 0, 0, 0.55), 0 4px 10px -2px rgba(0, 0, 0, 0.35);
+    --shadow-elevated: 0 16px 36px -8px rgba(0, 0, 0, 0.65), 0 6px 14px -3px rgba(0, 0, 0, 0.4);
+    --shadow-glow-blue: 0 0 24px -4px rgba(37, 99, 235, 0.2);
+    --shadow-glow-green: 0 0 24px -4px rgba(22, 163, 74, 0.2);
+  }
+
+  /* ---- LIGHT THEME (Clean Clinical / Enterprise Hospital Software) ---- */
+  .light {
+    color-scheme: light;
+
+    /* Surfaces - Soft cool off-white, crisp white primary */
+    --app-bg: #f6f8fb;
+    --surface: #ffffff;
+    --surface-raised: #ffffff;
+    --surface-overlay: #f1f4f9;
+    --surface-inset: #edf1f7;
+    --surface-tinted-blue: rgba(37, 99, 235, 0.035);
+
+    /* Subtle cool grey borders */
+    --border: #e2e7f0;
+    --border-subtle: #edf1f7;
+    --border-strong: #cbd5e1;
+
+    /* Crisp, high-contrast readable typography */
+    --fg: #0f172a;
+    --fg-muted: #556177;
+    --fg-faint: #94a3b8;
+
+    /* Sidebar */
+    --sidebar-bg: #fcfdfe;
+    --sidebar-hover: #f1f4f9;
+    --sidebar-active: #e8eef8;
+    --sidebar-border: #e8edf5;
+    --sidebar-fg: #1e293b;
+    --sidebar-fg-muted: #64748b;
+
+    /* Restrained accent tints */
+    --accent-red-subtle: rgba(220, 38, 38, 0.08);
+    --accent-green-subtle: rgba(22, 163, 74, 0.08);
+    --accent-amber-subtle: rgba(217, 119, 6, 0.08);
+    --accent-blue-subtle: rgba(37, 99, 235, 0.08);
+
+    /* Clean layered shadows */
+    --shadow-card: 0 1px 3px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02);
+    --shadow-card-hover: 0 10px 24px -4px rgba(15, 23, 42, 0.08), 0 3px 8px -2px rgba(15, 23, 42, 0.04);
+    --shadow-elevated: 0 18px 38px -8px rgba(15, 23, 42, 0.12), 0 6px 14px -3px rgba(15, 23, 42, 0.05);
+    --shadow-glow-blue: 0 0 20px -4px rgba(37, 99, 235, 0.12);
+    --shadow-glow-green: 0 0 20px -4px rgba(22, 163, 74, 0.12);
+  }
+
+  body {
+    background-color: var(--app-bg);
+    color: var(--fg);
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+}
+
+/* ---- ELEVATED UTILITY CLASSES ---- */
+.glass-panel {
+  background: var(--surface);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-subtle);
+}
+
+.hero-gradient {
+  background: radial-gradient(
+    ellipse 80% 50% at 50% -20%,
+    rgba(37, 99, 235, 0.08),
+    transparent
+  );
+}
+
+/* ---- PREMIUM SCROLLBAR ---- */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--fg-faint);
+}
+
+/* ---- SUBTLE ANIMATIONS ---- */
+@keyframes soft-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.55; transform: scale(0.96); }
+}
+.animate-soft-pulse {
+  animation: soft-pulse 2.2s ease-in-out infinite;
+}
+
+@keyframes ping-subtle {
+  0% { transform: scale(0.9); opacity: 0.8; }
+  70% { transform: scale(2); opacity: 0; }
+  100% { transform: scale(2); opacity: 0; }
+}
+.animate-ping-subtle {
+  animation: ping-subtle 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* ---- LEAFLET CUSTOM STYLES & OVERLAYS ---- */
+.leaflet-container {
+  font-family: inherit;
+  width: 100%;
+  height: 100%;
+  background: var(--surface-inset) !important;
+  z-index: 1;
+}
+
+/* In dark mode, invert & tone down basemap tiles slightly for clinical dark radar look */
+:root:not(.light) .leaflet-tile-pane {
+  filter: brightness(0.75) invert(1) contrast(1.2) hue-rotate(190deg) saturate(0.4);
+}
+
+.light .leaflet-tile-pane {
+  filter: contrast(1.05) saturate(0.85);
+}
+
+/* Custom Leaflet Popups matching theme */
+.leaflet-popup-content-wrapper {
+  background: var(--surface) !important;
+  color: var(--fg) !important;
+  border: 1px solid var(--border);
+  border-radius: 10px !important;
+  box-shadow: var(--shadow-card-hover) !important;
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+.leaflet-popup-tip {
+  background: var(--surface) !important;
+  border: 1px solid var(--border);
+}
+
+.leaflet-popup-content {
+  margin: 0 !important;
+  line-height: 1.4 !important;
+}
+
+.leaflet-popup-close-button {
+  color: var(--fg-muted) !important;
+  padding: 6px !important;
+}
+
+.leaflet-popup-close-button:hover {
+  color: var(--fg) !important;
+}
+
+/* DivIcon container reset */
+.leaflet-div-icon {
+  background: transparent !important;
+  border: none !important;
+}
+
