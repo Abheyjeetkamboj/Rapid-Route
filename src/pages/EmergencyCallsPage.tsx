@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Plus,
   Search,
@@ -74,8 +74,27 @@ export default function EmergencyCallsPage() {
   } = useDispatchContext();
 
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const queryIncidentId = searchParams.get('id');
 
-  const [selectedIncidentId, setSelectedIncidentId] = useState<string>('INC-4821');
+  const [selectedIncidentId, setSelectedIncidentId] = useState<string>(() => {
+    if (queryIncidentId && emergencies.some((e) => e.id === queryIncidentId)) {
+      return queryIncidentId;
+    }
+    return 'INC-4821';
+  });
+
+  // Sync if URL search query changes
+  useEffect(() => {
+    if (queryIncidentId && emergencies.some((e) => e.id === queryIncidentId)) {
+      setSelectedIncidentId(queryIncidentId);
+    }
+  }, [queryIncidentId, emergencies]);
+
+  const handleSelectIncident = (id: string) => {
+    setSelectedIncidentId(id);
+    setSearchParams({ id });
+  };
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [severityFilter, setSeverityFilter] = useState<'ALL' | EmergencySeverity | 'AWAITING'>('ALL');
   const [isIntakeModalOpen, setIsIntakeModalOpen] = useState<boolean>(false);
@@ -287,7 +306,7 @@ export default function EmergencyCallsPage() {
     };
 
     addEmergency(newEmergency);
-    setSelectedIncidentId(newId);
+    handleSelectIncident(newId);
     setIsIntakeModalOpen(false);
     setActionSuccessToast(`Emergency ${newId} verified & registered via AI Intake Assistant`);
     setTimeout(() => setActionSuccessToast(null), 5000);
@@ -607,7 +626,7 @@ export default function EmergencyCallsPage() {
                   return (
                     <div
                       key={incident.id}
-                      onClick={() => setSelectedIncidentId(incident.id)}
+                      onClick={() => handleSelectIncident(incident.id)}
                       className={`p-4 transition-all cursor-pointer relative ${
                         isSelected
                           ? 'bg-surface-raised border-l-4 border-l-accent-blue'

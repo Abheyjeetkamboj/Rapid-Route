@@ -95,6 +95,10 @@ export interface ActiveEmergency {
   preAlert?: HospitalPreAlert;
   selectedHospitalId?: string | null;
   hospitalConfirmedAt?: string;
+  actualResponseMinutes?: number;
+  actualArrivalMinutes?: number;
+  dispatchDurationMinutes?: number;
+  completedAt?: string;
 }
 
 export interface GeoLocation {
