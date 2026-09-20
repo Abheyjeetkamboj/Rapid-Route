@@ -47,7 +47,7 @@
     /* Typography */
     --fg: #f1f3f9;
     --fg-muted: #949db2;
-    --fg-faint: #5a647a;
+    --fg-faint: #8a95ab;
     --text-primary: #f1f3f9;
     --text-secondary: #949db2;
 
@@ -57,7 +57,7 @@
     --sidebar-active: #1c2234;
     --sidebar-border: #1b2131;
     --sidebar-fg: #d6dbe7;
-    --sidebar-fg-muted: #6b758d;
+    --sidebar-fg-muted: #8590a9;
 
     /* Core Status Colors */
     --critical: #dc2626;
@@ -65,11 +65,11 @@
     --success: #16a34a;
     --info: #2563eb;
 
-    /* Accent RGB channels for safe opacity calculations */
-    --accent-red-rgb: 220, 38, 38;
-    --accent-green-rgb: 22, 163, 74;
-    --accent-amber-rgb: 217, 119, 6;
-    --accent-blue-rgb: 37, 99, 235;
+    /* Accent RGB channels for safe opacity calculations (space-separated for CSS Color 4 / Tailwind) */
+    --accent-red-rgb: 220 38 38;
+    --accent-green-rgb: 22 163 74;
+    --accent-amber-rgb: 217 119 6;
+    --accent-blue-rgb: 37 99 235;
 
     /* Restrained accent tints */
     --accent-red-subtle: rgba(220, 38, 38, 0.12);
@@ -105,10 +105,10 @@
 
     /* Crisp, high-contrast readable typography */
     --fg: #0f172a;
-    --fg-muted: #556177;
-    --fg-faint: #94a3b8;
+    --fg-muted: #475569;
+    --fg-faint: #64748b;
     --text-primary: #0f172a;
-    --text-secondary: #556177;
+    --text-secondary: #475569;
 
     /* Sidebar */
     --sidebar-bg: #fcfdfe;
@@ -124,11 +124,11 @@
     --success: #16a34a;
     --info: #2563eb;
 
-    /* Accent RGB channels for safe opacity calculations */
-    --accent-red-rgb: 220, 38, 38;
-    --accent-green-rgb: 22, 163, 74;
-    --accent-amber-rgb: 217, 119, 6;
-    --accent-blue-rgb: 37, 99, 235;
+    /* Accent RGB channels for safe opacity calculations (space-separated for CSS Color 4 / Tailwind) */
+    --accent-red-rgb: 220 38 38;
+    --accent-green-rgb: 22 163 74;
+    --accent-amber-rgb: 217 119 6;
+    --accent-blue-rgb: 37 99 235;
 
     /* Restrained accent tints */
     --accent-red-subtle: rgba(220, 38, 38, 0.08);

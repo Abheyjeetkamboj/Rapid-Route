@@ -15,9 +15,9 @@ describe('RapidRoute Step 10 — Role Switcher, Master Demo & Productization Ver
   // 1. ROLE-BASED ACCESS CONTROL & PERSONAS
   // =========================================================================
   describe('1. Role-Based Access Control & Personas', () => {
-    it('defines all 4 required operational personas with full metadata', () => {
-      const roles: AppRole[] = ['DISPATCHER', 'OPERATIONS_MANAGER', 'HOSPITAL_OPERATOR', 'ADMIN'];
-      expect(Object.keys(ROLE_CONFIGS)).toHaveLength(4);
+    it('defines all required operational personas with full metadata', () => {
+      const roles: AppRole[] = ['DISPATCHER', 'OPERATIONS_MANAGER', 'HOSPITAL_OPERATOR', 'ADMIN', 'CITIZEN'];
+      expect(Object.keys(ROLE_CONFIGS)).toHaveLength(5);
 
       for (const role of roles) {
         const config = ROLE_CONFIGS[role];

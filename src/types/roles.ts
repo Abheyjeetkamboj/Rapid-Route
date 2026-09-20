@@ -1,4 +1,4 @@
-export type AppRole = 'DISPATCHER' | 'OPERATIONS_MANAGER' | 'HOSPITAL_OPERATOR' | 'ADMIN';
+export type AppRole = 'DISPATCHER' | 'OPERATIONS_MANAGER' | 'HOSPITAL_OPERATOR' | 'ADMIN' | 'CITIZEN';
 
 export interface RoleConfig {
   id: AppRole;
@@ -61,6 +61,25 @@ export const ROLE_CONFIGS: Record<AppRole, RoleConfig> = {
     defaultPath: '/settings',
     allowedPaths: ['/settings', '/overview', '/analytics'],
     description: 'System configuration, operational parameters, notification thresholds, telemetry settings, and demo scenario controls.',
+  },
+  CITIZEN: {
+    id: 'CITIZEN',
+    role: 'CITIZEN',
+    label: 'Citizen / Patient',
+    title: 'Citizen Emergency Portal',
+    userBadge: 'CP',
+    userName: 'A. Sharma (Citizen)',
+    userRoleTag: 'Citizen Requester',
+    defaultPath: '/citizen',
+    allowedPaths: [
+      '/citizen',
+      '/citizen/request',
+      '/citizen/emergency',
+      '/citizen/history',
+      '/citizen/notifications',
+      '/citizen/profile',
+    ],
+    description: 'Citizen-facing mobile-first emergency assistance portal. Request emergency aid, live location sharing, ambulance tracking, and status updates.',
   },
 };
 

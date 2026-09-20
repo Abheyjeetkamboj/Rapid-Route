@@ -208,7 +208,7 @@ export function NotificationDrawer({ isOpen, onClose }: NotificationDrawerProps)
                       e.stopPropagation();
                       dismissNotification(notif.id);
                     }}
-                    className="opacity-0 group-hover:opacity-100 p-1 text-fg-faint hover:text-fg hover:bg-surface-raised rounded transition-opacity"
+                    className="p-1 text-fg-muted hover:text-fg hover:bg-surface-raised rounded transition-colors"
                     aria-label="Dismiss"
                   >
                     <X className="w-3 h-3" />

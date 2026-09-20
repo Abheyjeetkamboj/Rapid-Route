@@ -394,7 +394,7 @@ export function Button({
 
   const variants = {
     primary:
-      'bg-accent-red text-white hover:bg-red-700 active:bg-red-800 shadow-sm hover:shadow',
+      'bg-red-600 bg-accent-red text-white hover:bg-red-700 active:bg-red-800 shadow-sm hover:shadow',
     secondary:
       'bg-surface-overlay text-fg border border-border hover:bg-surface-raised hover:border-border-strong active:bg-surface-inset',
     outline:

@@ -266,7 +266,7 @@ export default function AnalyticsPage() {
           <div className="flex items-start justify-between">
             <span className="text-xs font-semibold text-fg-muted uppercase tracking-wider">Incidents</span>
             <div className="relative cursor-pointer" onMouseEnter={() => setActiveTooltip('incidents')} onMouseLeave={() => setActiveTooltip(null)}>
-              <Info className="w-3.5 h-3.5 text-fg-faint hover:text-fg-muted" />
+              <Info className="w-3.5 h-3.5 text-fg-muted hover:text-fg" />
               {activeTooltip === 'incidents' && (
                 <div className="absolute right-0 top-5 w-48 p-2 rounded-lg bg-surface-raised border border-border shadow-elevated text-[11px] text-fg z-30 pointer-events-none">
                   Total emergency call volume within the selected period, split between in-progress and completed calls.
@@ -290,7 +290,7 @@ export default function AnalyticsPage() {
           <div className="flex items-start justify-between">
             <span className="text-xs font-semibold text-fg-muted uppercase tracking-wider">Response Time</span>
             <div className="relative cursor-pointer" onMouseEnter={() => setActiveTooltip('respTime')} onMouseLeave={() => setActiveTooltip(null)}>
-              <Info className="w-3.5 h-3.5 text-fg-faint hover:text-fg-muted" />
+              <Info className="w-3.5 h-3.5 text-fg-muted hover:text-fg" />
               {activeTooltip === 'respTime' && (
                 <div className="absolute right-0 top-5 w-52 p-2 rounded-lg bg-surface-raised border border-border shadow-elevated text-[11px] text-fg z-30 pointer-events-none">
                   Time elapsed from emergency call registration to ambulance arrival at the patient scene.
@@ -321,7 +321,7 @@ export default function AnalyticsPage() {
           <div className="flex items-start justify-between">
             <span className="text-xs font-semibold text-fg-muted uppercase tracking-wider">Dispatch Duration</span>
             <div className="relative cursor-pointer" onMouseEnter={() => setActiveTooltip('dispTime')} onMouseLeave={() => setActiveTooltip(null)}>
-              <Info className="w-3.5 h-3.5 text-fg-faint hover:text-fg-muted" />
+              <Info className="w-3.5 h-3.5 text-fg-muted hover:text-fg" />
               {activeTooltip === 'dispTime' && (
                 <div className="absolute right-0 top-5 w-52 p-2 rounded-lg bg-surface-raised border border-border shadow-elevated text-[11px] text-fg z-30 pointer-events-none">
                   Time from CAD call intake to dispatcher authorization and vehicle dispatch signal.
@@ -348,7 +348,7 @@ export default function AnalyticsPage() {
           <div className="flex items-start justify-between">
             <span className="text-xs font-semibold text-fg-muted uppercase tracking-wider">ETA Accuracy</span>
             <div className="relative cursor-pointer" onMouseEnter={() => setActiveTooltip('etaAcc')} onMouseLeave={() => setActiveTooltip(null)}>
-              <Info className="w-3.5 h-3.5 text-fg-faint hover:text-fg-muted" />
+              <Info className="w-3.5 h-3.5 text-fg-muted hover:text-fg" />
               {activeTooltip === 'etaAcc' && (
                 <div className="absolute right-0 top-5 w-52 p-2 rounded-lg bg-surface-raised border border-border shadow-elevated text-[11px] text-fg z-30 pointer-events-none">
                   Difference between predicted travel time and recorded actual arrival duration: |Predicted ETA - Actual Arrival|.
@@ -377,7 +377,7 @@ export default function AnalyticsPage() {
           <div className="flex items-start justify-between">
             <span className="text-xs font-semibold text-fg-muted uppercase tracking-wider">Fleet Utilisation</span>
             <div className="relative cursor-pointer" onMouseEnter={() => setActiveTooltip('fleetUtil')} onMouseLeave={() => setActiveTooltip(null)}>
-              <Info className="w-3.5 h-3.5 text-fg-faint hover:text-fg-muted" />
+              <Info className="w-3.5 h-3.5 text-fg-muted hover:text-fg" />
               {activeTooltip === 'fleetUtil' && (
                 <div className="absolute right-0 top-5 w-52 p-2 rounded-lg bg-surface-raised border border-border shadow-elevated text-[11px] text-fg z-30 pointer-events-none">
                   Proportion of regional fleet actively deployed on dispatches, corridor transit, and hospital transfers.
@@ -404,7 +404,7 @@ export default function AnalyticsPage() {
           <div className="flex items-start justify-between">
             <span className="text-xs font-semibold text-fg-muted uppercase tracking-wider">Hospital Handover</span>
             <div className="relative cursor-pointer" onMouseEnter={() => setActiveTooltip('handover')} onMouseLeave={() => setActiveTooltip(null)}>
-              <Info className="w-3.5 h-3.5 text-fg-faint hover:text-fg-muted" />
+              <Info className="w-3.5 h-3.5 text-fg-muted hover:text-fg" />
               {activeTooltip === 'handover' && (
                 <div className="absolute right-0 top-5 w-52 p-2 rounded-lg bg-surface-raised border border-border shadow-elevated text-[11px] text-fg z-30 pointer-events-none">
                   Time from ambulance arrival at emergency intake bay to clinical nurse sign-off and vehicle release.

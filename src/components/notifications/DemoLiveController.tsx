@@ -70,7 +70,16 @@ export function DemoLiveController() {
             {/* 1. Hero Scenario Quick-Trigger */}
             <div>
               <button
-                onClick={() => loadCardiacScenario()}
+                onClick={() => {
+                  loadCardiacScenario();
+                  try {
+                    if (typeof localStorage !== 'undefined') {
+                      localStorage.setItem('rapidroute_citizen_active_incident_id', 'INC-8841');
+                    }
+                  } catch {
+                    // Ignore
+                  }
+                }}
                 className="w-full group flex items-center justify-between px-3 py-2 rounded-lg bg-red-500/10 hover:bg-red-500/15 border border-red-500/25 text-xs font-semibold text-red-600 dark:text-red-400 transition-all shadow-xs"
               >
                 <div className="flex items-center gap-2 text-left">
@@ -92,7 +101,7 @@ export function DemoLiveController() {
                 <span className="font-semibold text-fg font-mono">
                   Stage {simulationStatus.currentStage} of {simulationStatus.totalStages}: {simulationStatus.stageName}
                 </span>
-                <span className="text-[11px] font-mono text-fg-faint">
+                <span className="text-[11px] font-mono text-fg-muted font-semibold">
                   {Math.round((simulationStatus.currentStage / simulationStatus.totalStages) * 100)}%
                 </span>
               </div>
@@ -104,7 +113,7 @@ export function DemoLiveController() {
               <div className="h-1.5 w-full bg-surface rounded-full mt-2 overflow-hidden border border-border-subtle">
                 <div
                   style={{ width: `${(simulationStatus.currentStage / simulationStatus.totalStages) * 100}%` }}
-                  className="h-full bg-accent-blue rounded-full transition-all duration-300"
+                  className="h-full bg-blue-600 bg-accent-blue rounded-full transition-all duration-300"
                 />
               </div>
 
@@ -121,7 +130,7 @@ export function DemoLiveController() {
                 ) : (
                   <button
                     onClick={() => startSimulation(4000)}
-                    className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent-blue hover:bg-accent-blue/90 text-white text-xs font-semibold shadow-xs transition-all"
+                    className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 bg-accent-blue hover:bg-blue-700 hover:bg-accent-blue/90 text-white text-xs font-semibold shadow-xs transition-all"
                   >
                     <Play className="w-3.5 h-3.5 fill-white" />
                     <span>{simulationStatus.currentStage === 0 ? 'Start Live Run' : 'Resume Run'}</span>
@@ -156,7 +165,7 @@ export function DemoLiveController() {
                 </span>
                 <button
                   onClick={() => setShowManualTriggers(!showManualTriggers)}
-                  className="text-[10px] text-accent-blue hover:underline"
+                  className="text-[10px] font-semibold text-blue-600 dark:text-blue-400 hover:underline"
                 >
                   {showManualTriggers ? 'Hide' : 'Show'}
                 </button>
@@ -202,10 +211,10 @@ export function DemoLiveController() {
 
                   <button
                     onClick={() => notificationService.createTestNotification()}
-                    className="col-span-2 flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-md bg-accent-blue/10 hover:bg-accent-blue/15 border border-accent-blue/25 text-[11px] font-semibold text-accent-blue transition-all"
+                    className="col-span-2 flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-md bg-blue-500/10 hover:bg-blue-500/15 border border-blue-500/25 text-[11px] font-semibold text-blue-600 dark:text-blue-400 transition-all"
                     title="Create deterministic test notification for INC-8841"
                   >
-                    <Radio className="w-3 h-3 text-accent-blue" />
+                    <Radio className="w-3 h-3 text-blue-500" />
                     <span>Create Test Notification (INC-8841)</span>
                   </button>
 

@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
 import { DispatchProvider } from './context/DispatchContext';
 import { RoleProvider, useRole } from './context/RoleContext';
+import { CitizenProvider } from './context/CitizenContext';
 import { AppLayout } from './components/layout/AppLayout';
 import { RoleProtectedRoute } from './components/auth/RoleProtectedRoute';
 import EmergencyCallsPage from './pages/EmergencyCallsPage';
@@ -12,6 +13,12 @@ import HospitalsPage from './pages/HospitalsPage';
 import HospitalOperationsPage from './pages/HospitalOperationsPage';
 import AnalyticsPage from './pages/AnalyticsPage';
 import SettingsPage from './pages/SettingsPage';
+import CitizenHomePage from './pages/citizen/CitizenHomePage';
+import CitizenRequestPage from './pages/citizen/CitizenRequestPage';
+import CitizenEmergencyPage from './pages/citizen/CitizenEmergencyPage';
+import CitizenHistoryPage from './pages/citizen/CitizenHistoryPage';
+import CitizenNotificationsPage from './pages/citizen/CitizenNotificationsPage';
+import CitizenProfilePage from './pages/citizen/CitizenProfilePage';
 
 function IndexRoute() {
   const { currentRole, currentConfig } = useRole();
@@ -25,10 +32,11 @@ export default function App() {
   return (
     <ThemeProvider>
       <DispatchProvider>
-        <RoleProvider>
-          <BrowserRouter>
-            <Routes>
-              <Route element={<AppLayout />}>
+        <CitizenProvider>
+          <RoleProvider>
+            <BrowserRouter>
+              <Routes>
+                <Route element={<AppLayout />}>
                 {/* Dynamic Default Landing Route */}
                 <Route index element={<IndexRoute />} />
                 <Route path="emergency-calls" element={<Navigate to="/" replace />} />
@@ -129,13 +137,31 @@ export default function App() {
                   <Route path="settings" element={<SettingsPage />} />
                 </Route>
 
+                {/* Citizen / Patient Emergency Experience */}
+                <Route
+                  element={
+                    <RoleProtectedRoute
+                      allowedRoles={['CITIZEN']}
+                      workspaceName="Citizen Emergency Portal"
+                    />
+                  }
+                >
+                  <Route path="citizen" element={<CitizenHomePage />} />
+                  <Route path="citizen/request" element={<CitizenRequestPage />} />
+                  <Route path="citizen/emergency" element={<CitizenEmergencyPage />} />
+                  <Route path="citizen/history" element={<CitizenHistoryPage />} />
+                  <Route path="citizen/notifications" element={<CitizenNotificationsPage />} />
+                  <Route path="citizen/profile" element={<CitizenProfilePage />} />
+                </Route>
+
                 {/* Catch-all redirect */}
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Route>
             </Routes>
           </BrowserRouter>
         </RoleProvider>
-      </DispatchProvider>
-    </ThemeProvider>
-  );
+      </CitizenProvider>
+    </DispatchProvider>
+  </ThemeProvider>
+);
 }

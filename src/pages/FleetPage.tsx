@@ -169,7 +169,7 @@ export default function FleetPage() {
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-fg-faint hover:text-fg"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-fg-muted hover:text-fg"
             >
               <X className="w-3.5 h-3.5" />
             </button>

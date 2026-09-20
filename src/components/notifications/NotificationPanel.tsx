@@ -173,7 +173,7 @@ export function NotificationPanel({ isOpen, onClose, anchorRef }: NotificationPa
                 className={`group relative p-3 sm:p-3.5 transition-all cursor-pointer flex items-start gap-3 select-none ${
                   isUnread
                     ? 'bg-surface-raised/70 hover:bg-surface-overlay border-l-2 border-l-accent-blue'
-                    : 'bg-surface hover:bg-surface-raised/50 opacity-80 hover:opacity-100'
+                    : 'bg-surface hover:bg-surface-raised/50'
                 }`}
               >
                 {/* Category Icon */}
@@ -209,7 +209,7 @@ export function NotificationPanel({ isOpen, onClose, anchorRef }: NotificationPa
                       <Clock className="w-2.5 h-2.5" />
                       {formatRelativeTime(notif.createdAt)}
                     </span>
-                    <span className="text-accent-blue opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-0.5 font-sans font-semibold">
+                    <span className="text-accent-blue hover:text-accent-blue/80 transition-colors flex items-center gap-0.5 font-sans font-semibold">
                       Open
                       <ExternalLink className="w-2.5 h-2.5" />
                     </span>
@@ -232,7 +232,7 @@ export function NotificationPanel({ isOpen, onClose, anchorRef }: NotificationPa
                     e.stopPropagation();
                     dismissNotification(notif.id);
                   }}
-                  className="opacity-0 group-hover:opacity-100 p-1 text-fg-faint hover:text-fg hover:bg-surface-raised rounded transition-opacity"
+                  className="p-1 text-fg-muted hover:text-fg hover:bg-surface-raised rounded transition-colors"
                   title="Dismiss notification"
                   aria-label="Dismiss notification"
                 >
